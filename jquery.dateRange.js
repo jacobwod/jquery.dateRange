@@ -15,10 +15,14 @@
          var self = 
          {
             initialize: function() 
-            {               
+            {
                $container = self.initializeContainer().hide();
                $prev = $container.find('div.prev').click(self.loadPrevious);
                $next = $container.find('div.next').click(self.loadNext);
+               
+               $container.find('button.apply').click(self.applyButtonClicked);
+               $container.find('select.rangeDropdown').bind('change', self.rangeDropdownChanged);
+               
                var now = new Date();
                now.setDate(1);
                var prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
@@ -86,18 +90,29 @@
                }
             },
             rangeSelected: function()
-            {            
+            {
                if (selected[0] > selected[1])
                {
                   var x = selected[0];
                   selected[0] = selected[1];
                   selected[1] = x;
                }
-               $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
                self.highlight($container.find('table:first'));
                self.highlight($container.find('table:last'));
-               self.hide();
+               selecting = [];
                if (opts.selected != null) { opts.selected(selected); } 
+            },
+            applyButtonClicked: function(e) {
+              e.preventDefault();
+              $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
+              self.hide();
+            },
+            rangeDropdownChanged: function(e) {
+              var option = $(this).find(':selected');
+              selected = [];
+              selected[0] = option.data('startdate');
+              selected[1] = option.data('enddate');
+              self.rangeSelected();
             },
             highlight: function($table)
             {
@@ -134,7 +149,54 @@
                var $container = $('<div>').addClass('calendar').insertAfter($input);
                var $nav = $('<div>').addClass('nav').appendTo($container);
                $nav.html('<div class="prev">&lsaquo;</div><div class="next">&rsaquo;</div>');
+               
+               var $sidebar = $('<div>').addClass('sidebar').appendTo($container);
+               $sidebar.html(self.buildRangeDropdown());
+               var $buttons = $('<form method="get" action="">').addClass('buttons').appendTo($sidebar);
+               $('<button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button>').appendTo($buttons);
                return $container;
+            },
+            buildRangeDropdown: function() 
+            {
+              var date = new Date();
+              var dates =  [
+                {
+                  text:  'Today',
+                  value: 'today',
+                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
+                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                },
+                {
+                  text:  'Yesterday',
+                  value: 'yesterday',
+                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-1),
+                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate()-1)
+                },
+                {
+                  text:  'Last 7 days',
+                  value: 'last7days',
+                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-7),
+                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                },
+                {
+                  text:  'Last 14 days',
+                  value: 'last14days',
+                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-14),
+                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                },
+                {
+                  text:  'Last month',
+                  value: 'lastmonth',
+                  startdate: new Date(date.getFullYear(), date.getMonth()-1, date.getDate()),
+                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                }
+              ];
+              var $dropdown = $('<select>').addClass('rangeDropdown');
+              $(dates).each(function() {
+                var $option = $('<option>').val(this.value).text(this.text).data({startdate: this.startdate, enddate: this.enddate});
+                $option.appendTo($dropdown);
+              });
+              return $dropdown;
             },
             buildMonth: function(date)
             {
@@ -176,7 +238,7 @@
             },
             format: function(date)
             {
-               return abbreviations[date.getMonth()] + ' ' + date.getDate() + ' ' + date.getFullYear();
+               return abbreviations[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
             }
          };
          this.dateRange = self;

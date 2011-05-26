@@ -10,16 +10,16 @@
    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 
 <script type="text/javascript">
-$(document).ready(function()
-{
-  $('#date').dateRange(
-  {
-     selected: function(dates)
-     {
-        var from = dates[0];
-        var to = dates[1];
-        //do something special
-     }
+$(document).ready(function() {
+  // Could get this from PHP or something
+  var _now = new Date();
+  var _startdate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()-7)
+  var _enddate = _now;
+  $('#date').dateRange({
+    startWith: [_startdate, _enddate],
+    selected: function(dates) {
+      //console.log('Selected dates:', dates);
+    }
   });
 });
 </script>
