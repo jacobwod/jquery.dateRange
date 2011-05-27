@@ -16,5 +16,11 @@ div.calendar td.highlight{background:#ccc;}
 div.calendar div.sidebar{
   position: absolute;
   right: 0;
-  width: 140px;
+  width: 170px;
+}
+
+div.calendar input.inputStart,
+div.calendar input.inputEnd {
+  width: 75px;
+  font-size: 10px;
 }

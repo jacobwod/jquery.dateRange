@@ -11,7 +11,7 @@
          if (this.dateRange) { return false; }
       
          var $input = $(this);
-         var $container, selecting, selected, oldSelected, $prev, $next;
+         var $container, selecting, selected, oldSelected, $prev, $next, $inputStart, $inputEnd;
          var self = 
          {
             initialize: function() 
@@ -19,6 +19,11 @@
                $container = self.initializeContainer().hide();
                $prev = $container.find('div.prev').click(self.loadPrevious);
                $next = $container.find('div.next').click(self.loadNext);
+               
+               $inputStart = $container.find('.inputStart');
+               $inputEnd = $container.find('.inputEnd');
+               $inputStart.bind('blur', self.inputEntered);
+               $inputEnd.bind('blur', self.inputEntered);
                
                $container.find('button.apply').click(self.applyButtonClicked);
                $container.find('button.cancel').click(self.cancelButtonClicked);
@@ -52,6 +57,9 @@
                  selected = opts.startWith;
                  oldSelected = selected;
                  self.rangeSelected();
+                 self.updateGUIElements();
+                 
+                 // Make sure the main input shows the right value
                  $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
                }
             },
@@ -66,6 +74,7 @@
               
               selected = [from, to];
               self.rangeSelected();
+              self.updateGUIElements();
               return false;
             },
             parseDate: function(value)
@@ -90,7 +99,19 @@
                {
                   selected = selecting;
                   self.rangeSelected();
+                  self.updateGUIElements();
                }
+            },
+            inputEntered: function(e) {
+              e.preventDefault();
+              var $t = $(this);
+              var val = $t.val();
+              selecting.push(new Date(val));
+              if (selecting.length == 2) {
+                selected = selecting;
+                self.rangeSelected();
+                self.updateGUIElements();
+              }
             },
             rangeSelected: function()
             {
@@ -105,6 +126,10 @@
                selecting = [];
                if (opts.selected != null) { opts.selected(selected); } 
             },
+            updateGUIElements: function() {
+              $inputStart.val(self.formatInput(selected[0]));
+              $inputEnd.val(self.formatInput(selected[1]));
+            },
             applyButtonClicked: function(e) {
               e.preventDefault();
               oldSelected = selected;
@@ -115,6 +140,7 @@
               e.preventDefault();
               selected = oldSelected;
               self.rangeSelected();
+              self.updateGUIElements();
               self.hide();
             },
             rangeDropdownChanged: function(e) {
@@ -123,6 +149,7 @@
               selected[0] = option.data('startdate');
               selected[1] = option.data('enddate');
               self.rangeSelected();
+              self.updateGUIElements();
             },
             highlight: function($table)
             {
@@ -162,8 +189,9 @@
                
                var $sidebar = $('<div>').addClass('sidebar').appendTo($container);
                $sidebar.html(self.buildRangeDropdown());
-               var $buttons = $('<form method="get" action="">').addClass('buttons').appendTo($sidebar);
-               $('<button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button>').appendTo($buttons);
+               var $form = $('<form method="get" action="">').addClass('buttons').appendTo($sidebar);
+               $('<input type="text" value="" class="inputStart" maxlength="10" /> - <input type="text" value="" class="inputEnd" maxlength="10" />').appendTo($form);
+               $('<button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button>').appendTo($form);
                return $container;
             },
             buildRangeDropdown: function() 
@@ -249,6 +277,9 @@
             format: function(date)
             {
                return abbreviations[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+            },
+            formatInput: function(date) {
+              return date.getMonth()+1 + '/' + date.getDate() + '/' + date.getFullYear();
             }
          };
          this.dateRange = self;
