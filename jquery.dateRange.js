@@ -11,6 +11,11 @@
          if (this.dateRange) { return false; }
       
          var $input = $(this);
+         
+         // Map .val() to .text() if it's a <span>
+         if ($input.is('span'))
+           $input.val = $input.text;
+         
          var $container, selecting, selected, oldSelected, $prev, $next, $inputStart, $inputEnd;
          var self = 
          {
@@ -35,20 +40,23 @@
                $container.append(self.buildMonth(prev));
                $container.append(self.buildMonth(now));
                
-               $input.click(function()
-               {
-                  self.show();
-                  return false;
-               }).keydown(function(e)
-               {
-                 if (e.keyCode == 13) { self.entered(); }
-               });
+               $input
+                 .click(function() {
+                    self.show();
+                    return false;
+                 })
+                 .keydown(function(e) {
+                   if (e.keyCode == 13) 
+                     self.entered();
+                 });
                
-               $(document).keydown(function(e)
-               {
-                  if (e.keyCode == 27) { self.hide(); }
-               }).click(self.hide);
-               
+               $(document)
+                 .click(self.cancelButtonClicked)
+                 .keydown(function(e) {
+                   if (e.keyCode == 27)
+                     self.cancelButtonClicked(e);
+                 });
+
                $container.delegate(daySelector, 'click', self.clicked);
                $container.click(function(){return false;});
                
@@ -83,12 +91,12 @@
             },
             show: function()
             {
-               selecting = new Array();
-               $container.show();
+               selecting = [];
+               $container.show().parents('.calendarWrap').addClass('dateRangeVisible');
             },
             hide: function()
             {
-               $container.hide();
+               $container.hide().parents('.calendarWrap').removeClass('dateRangeVisible');
             },
             clicked: function()
             {
@@ -188,10 +196,13 @@
                $nav.html('<div class="prev">&lsaquo;</div><div class="next">&rsaquo;</div>');
                
                var $sidebar = $('<div>').addClass('sidebar').appendTo($container);
-               $sidebar.html(self.buildRangeDropdown());
-               var $form = $('<form method="get" action="">').addClass('buttons').appendTo($sidebar);
-               $('<input type="text" value="" class="inputStart" maxlength="10" /> - <input type="text" value="" class="inputEnd" maxlength="10" />').appendTo($form);
-               $('<button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button>').appendTo($form);
+               var $form = $('<form>').attr({
+                 method: 'get',
+                 action: document.location
+               }).appendTo($sidebar);
+               var $dropdown = $('<fieldset>').addClass('dropdown').append('<label>Time period</label>').append(self.buildRangeDropdown()).appendTo($form);
+               $('<fieldset class="inputs"><input type="text" value="" class="inputStart" maxlength="10" /> - <input type="text" value="" class="inputEnd" maxlength="10" /></fieldset>').appendTo($form);
+               $('<fieldset class="buttons"><button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button></fieldset>').appendTo($form);
                return $container;
             },
             buildRangeDropdown: function() 
