@@ -11,7 +11,7 @@
          if (this.dateRange) { return false; }
       
          var $input = $(this);
-         var $container, selecting, selected, $prev, $next;
+         var $container, selecting, selected, oldSelected, $prev, $next;
          var self = 
          {
             initialize: function() 
@@ -21,6 +21,7 @@
                $next = $container.find('div.next').click(self.loadNext);
                
                $container.find('button.apply').click(self.applyButtonClicked);
+               $container.find('button.cancel').click(self.cancelButtonClicked);
                $container.find('select.rangeDropdown').bind('change', self.rangeDropdownChanged);
                
                var now = new Date();
@@ -48,8 +49,10 @@
                
                if (opts.startWith != null)
                {
-                  selected = opts.startWith;
-                  self.rangeSelected();
+                 selected = opts.startWith;
+                 oldSelected = selected;
+                 self.rangeSelected();
+                 $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
                }
             },
             entered: function()
@@ -104,7 +107,14 @@
             },
             applyButtonClicked: function(e) {
               e.preventDefault();
+              oldSelected = selected;
               $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
+              self.hide();
+            },
+            cancelButtonClicked: function(e) {
+              e.preventDefault();
+              selected = oldSelected;
+              self.rangeSelected();
               self.hide();
             },
             rangeDropdownChanged: function(e) {
