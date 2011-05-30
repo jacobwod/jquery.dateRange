@@ -207,37 +207,67 @@
             },
             buildRangeDropdown: function() 
             {
-              var date = new Date();
+              var now = new Date();
               var dates =  [
+                {
+                  text:  'Custom',
+                  value: 'custom',
+                  startdate: new Date(0),
+                  enddate:   new Date(0)
+                },
                 {
                   text:  'Today',
                   value: 'today',
-                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()),
-                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                  startdate: new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 },
                 {
                   text:  'Yesterday',
                   value: 'yesterday',
-                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-1),
-                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate()-1)
+                  startdate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-1),
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate()-1)
+                },
+                {
+                  text:  'This week',
+                  value: 'thisweek', // 86400000  = one day in mili
+                  startdate: new Date(now - (now.getDay() % 7)*86400000), // Go back so many days that have passed since day 0 (Sunday)
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                },
+                {
+                  text:  'Last week',
+                  value: 'lastweek',
+                  startdate: new Date(now - ((now.getDay() % 7)*86400000) - 7*86400000), // Last Sunday -7 days
+                  enddate:   new Date(now - (now.getDay() % 7)*86400000 - 86400000) // Last Sunday -1 day
                 },
                 {
                   text:  'Last 7 days',
                   value: 'last7days',
-                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-7),
-                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                  startdate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-6), // Today and 6 last days gives 7 in total
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 },
                 {
                   text:  'Last 14 days',
                   value: 'last14days',
-                  startdate: new Date(date.getFullYear(), date.getMonth(), date.getDate()-14),
-                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                  startdate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-13),
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                },
+                {
+                  text:  'This month',
+                  value: 'thismonth',
+                  startdate: new Date(now.getFullYear(), now.getMonth(), 1),
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 },
                 {
                   text:  'Last month',
                   value: 'lastmonth',
-                  startdate: new Date(date.getFullYear(), date.getMonth()-1, date.getDate()),
-                  enddate:   new Date(date.getFullYear(), date.getMonth(), date.getDate())
+                  startdate: new Date(now.getFullYear(), now.getMonth()-1, 1),
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), 0)
+                },
+                {
+                  text:  'Last 30 days',
+                  value: 'last30days',
+                  startdate: new Date(now.getFullYear(), now.getMonth(), now.getDate()-29), 
+                  enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 }
               ];
               var $dropdown = $('<select>').addClass('rangeDropdown');
