@@ -1,0 +1,19 @@
+h1. jquery.dateRange
+
+h2. About
+
+dateRange is a simple, jQuery-based date range picker. Sure, you can find tons of great date pickers out there, but personally, I couldn't find anything that had *everything* I needed for my projects. So I used "Karl Seguin's":https://github.com/karlseguin "work":https://github.com/karlseguin/jquery.dateRange as a base, and started adding some modifications.
+
+N.B. This is still _work in progress_, and I'm not dealing with the looks of this plugin for now whatsoever, so don't expect it to look fantastic just yet!
+
+h2. Requirements
+
+jQuery (tested with 1.6.1)
+
+h2. Compatibility
+
+I run some quick tests in the following browsers:
+
+* IE6/7/8/9 (although IE6 support is unintended)
+* Firefox 4
+* Safari 5 
