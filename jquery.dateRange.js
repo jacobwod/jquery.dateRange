@@ -133,11 +133,10 @@
                $inputStart.val(self.formatInput(selected[0]));
                $inputEnd.val(self.formatInput(selected[1]));
                self.selectCorrectDropdownValue();
-
                selecting = [];
-               if (opts.selected != null) { 
+               if (typeof opts.selected === 'function') { 
                  opts.selected(selected); 
-               } 
+               }
             },
             selectCorrectDropdownValue: function() {
               var $dropdown = $container.find('select.rangeDropdown'),
@@ -162,6 +161,9 @@
               oldSelected = selected;
               $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
               self.hide();
+              if (typeof opts.applied === 'function') { 
+                opts.applied(selected); 
+              }
             },
             cancelButtonClicked: function(e) {
               e.preventDefault();

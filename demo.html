@@ -1,29 +1,42 @@
 <html>
   <head>
      <link href="dateRange.css" media="screen" rel="stylesheet" type="text/css" />
-     <script type="text/javascript" src="jquery.min.js"></script>
+     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
      <script type="text/javascript" src="jquery.dateRange.js"></script>
   </head>
   <body>
     <span id="date"></span>
-    <input type="text" id="date2" />
     <script type="text/javascript">
     $(document).ready(function() {
-      // Could get this from PHP or something
-      var _now = new Date();
-      var _startdate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()-6);
-      var _enddate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate())
-      $('#date').dateRange({
-        startWith: [_startdate, _enddate],
-        selected: function(dates) {
-          //console.log('Selected dates:', dates);
-        }
-      });
+      // Initial dates could come from server, cookie, LocalStorage,
+      // or be created in JS, like in this example. The important thing
+      // is to pass in a JS Date Object and not just a string.
+      // Also, make sure that the time part of the Date object
+      // is not specified, e.g. we want something like this:
+      // Wed May 25 2011 00:00:00 GMT+0200 (CEST)
       
-      $('#date2').dateRange({
+      var _now = new Date();
+      // Here we start of with the last 7 days selected
+      var _startdate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()-6),
+          _enddate   = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate());
+      
+      $('#date').dateRange({
+        // Specify which dates to start with
         startWith: [_startdate, _enddate],
+        // Callback when a date range is selected
         selected: function(dates) {
-          //console.log('Selected dates:', dates);
+          // Get the dates and output as ISO string (YYYY-MM-DD), 
+          // but do it the hard way, as we can't really 
+          // use .toISOString() for all browsers yet...
+          var start = dates[0].getFullYear()+'-'+((dates[0].getMonth()<10)?'0':'')+(dates[0].getMonth()+1)+'-'+((dates[0].getDate()<10)?'0':'')+dates[0].getDate();
+          var end   = dates[1].getFullYear()+'-'+((dates[1].getMonth()<10)?'0':'')+(dates[1].getMonth()+1)+'-'+((dates[1].getDate()<10)?'0':'')+dates[1].getDate();
+          // Now do whatever with those date strings...
+          //console.log('selected() called with following dates selected:', dates);
+          //console.log(start, end);
+        }, 
+        // Callback when the Apply button is pressed
+        applied: function(dates) {
+          //console.log('applied() called with following dates selected:', dates);
         }
       });
     });
