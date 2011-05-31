@@ -1,7 +1,7 @@
 (function($){
    $.fn.dateRange = function(options)
    {
-      var defaults = {selected: null, startWith: null, minimumDate: null, maximumDate: null};
+      var defaults = {selected: null, applied: null, startWith: null, minimumDate: null, maximumDate: null};
       var opts = $.extend({}, defaults, options);
       var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
       var abbreviations = new Array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec');
