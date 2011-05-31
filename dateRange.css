@@ -16,7 +16,9 @@ position:relative;
 div.calendar {
 border:2px solid #e6e6e6;
 overflow:auto;
+z-index: 999;
 width:600px;
+height: 200px;
 background:#f0f0f0;
 position:absolute;
 line-height:1em;
@@ -81,12 +83,12 @@ background:#ccc;
 
 div.calendar div.sidebar {
 position:absolute;
-right:0;
+right:10px;
 height: 150px;
+width: 200px;
 }
 
 div.calendar div.sidebar fieldset {
-  width: 170px;
   border: 0;
 }
 
