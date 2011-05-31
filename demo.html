@@ -1,33 +1,32 @@
 <html>
-<head>
-   <link href="dateRange.css" media="screen" rel="stylesheet" type="text/css" />
-   <script type="text/javascript" src="jquery.min.js"></script>
-   <script type="text/javascript" src="jquery.dateRange.js"></script>
-</head>
-<body>
-<span id="date"></span>
-
-
-<input type="text" id="date2" />
-
-<script type="text/javascript">
-$(document).ready(function() {
-  // Could get this from PHP or something
-  var _now = new Date();
-  var _startdate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()-7)
-  var _enddate = _now;
-  $('#date').dateRange({
-    startWith: [_startdate, _enddate],
-    selected: function(dates) {
-      //console.log('Selected dates:', dates);
-    }
-  });
-  
-  $('#date2').dateRange({
-    startWith: [_startdate, _enddate],
-    selected: function(dates) {
-      //console.log('Selected dates:', dates);
-    }
-  });
-});
-</script>
+  <head>
+     <link href="dateRange.css" media="screen" rel="stylesheet" type="text/css" />
+     <script type="text/javascript" src="jquery.min.js"></script>
+     <script type="text/javascript" src="jquery.dateRange.js"></script>
+  </head>
+  <body>
+    <span id="date"></span>
+    <input type="text" id="date2" />
+    <script type="text/javascript">
+    $(document).ready(function() {
+      // Could get this from PHP or something
+      var _now = new Date();
+      var _startdate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate()-6);
+      var _enddate = new Date(_now.getFullYear(), _now.getMonth(), _now.getDate())
+      $('#date').dateRange({
+        startWith: [_startdate, _enddate],
+        selected: function(dates) {
+          //console.log('Selected dates:', dates);
+        }
+      });
+      
+      $('#date2').dateRange({
+        startWith: [_startdate, _enddate],
+        selected: function(dates) {
+          //console.log('Selected dates:', dates);
+        }
+      });
+    });
+    </script>
+  </body>
+</html>

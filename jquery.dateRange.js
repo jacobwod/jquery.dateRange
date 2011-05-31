@@ -16,11 +16,13 @@
          if ($input.is('span'))
            $input.val = $input.text;
          
-         var $container, selecting, selected, oldSelected, $prev, $next, $inputStart, $inputEnd;
+         var $container, selecting, selected, oldSelected, $prev, $next, $inputStart, $inputEnd, dropdownDates;
          var self = 
          {
             initialize: function() 
             {
+               dropdownDates = self.initializeDropdownDates();
+               
                $container = self.initializeContainer().hide();
                $prev = $container.find('div.prev').click(self.loadPrevious);
                $next = $container.find('div.next').click(self.loadNext);
@@ -65,7 +67,6 @@
                  selected = opts.startWith;
                  oldSelected = selected;
                  self.rangeSelected();
-                 self.updateGUIElements();
                  
                  // Make sure the main input shows the right value
                  $input.val(self.format(selected[0]) + ' - ' + self.format(selected[1]));
@@ -82,7 +83,6 @@
               
               selected = [from, to];
               self.rangeSelected();
-              self.updateGUIElements();
               return false;
             },
             parseDate: function(value)
@@ -107,7 +107,6 @@
                {
                   selected = selecting;
                   self.rangeSelected();
-                  self.updateGUIElements();
                }
             },
             inputEntered: function(e) {
@@ -118,7 +117,6 @@
               if (selecting.length == 2) {
                 selected = selecting;
                 self.rangeSelected();
-                self.updateGUIElements();
               }
             },
             rangeSelected: function()
@@ -131,12 +129,33 @@
                }
                self.highlight($container.find('table:first'));
                self.highlight($container.find('table:last'));
+
+               $inputStart.val(self.formatInput(selected[0]));
+               $inputEnd.val(self.formatInput(selected[1]));
+               self.selectCorrectDropdownValue();
+
                selecting = [];
-               if (opts.selected != null) { opts.selected(selected); } 
+               if (opts.selected != null) { 
+                 opts.selected(selected); 
+               } 
             },
-            updateGUIElements: function() {
-              $inputStart.val(self.formatInput(selected[0]));
-              $inputEnd.val(self.formatInput(selected[1]));
+            selectCorrectDropdownValue: function() {
+              var $dropdown = $container.find('select.rangeDropdown'),
+                  dates = dropdownDates,
+                  start = selected[0].getTime(),
+                  end   = selected[1].getTime(),
+                  found = false;
+              
+              $(dates).each(function() {
+                if (start == this.startdate.getTime() && end == this.enddate.getTime()) {
+                  $dropdown.val(this.value);
+                  found = true;
+                }
+              });
+              
+              if (found == false) {
+                $dropdown.val('custom');
+              }
             },
             applyButtonClicked: function(e) {
               e.preventDefault();
@@ -148,7 +167,6 @@
               e.preventDefault();
               selected = oldSelected;
               self.rangeSelected();
-              self.updateGUIElements();
               self.hide();
             },
             rangeDropdownChanged: function(e) {
@@ -157,7 +175,6 @@
               selected[0] = option.data('startdate');
               selected[1] = option.data('enddate');
               self.rangeSelected();
-              self.updateGUIElements();
             },
             highlight: function($table)
             {
@@ -188,32 +205,15 @@
                var date = $container.children('table:eq(0)').data('date');
                $container.find('table').after(self.buildMonth(new Date(date.getFullYear(), date.getMonth()+1, 1)));            
             },
-            initializeContainer: function()
-            {
-               $input.wrap($('<div>').addClass('calendarWrap'));
-               var $container = $('<div>').addClass('calendar').insertAfter($input);
-               var $nav = $('<div>').addClass('nav').appendTo($container);
-               $nav.html('<div class="prev">&lsaquo;</div><div class="next">&rsaquo;</div>');
-               
-               var $sidebar = $('<div>').addClass('sidebar').appendTo($container);
-               var $form = $('<form>').attr({
-                 method: 'get',
-                 action: document.location
-               }).appendTo($sidebar);
-               var $dropdown = $('<fieldset>').addClass('dropdown').append('<label>Time period</label>').append(self.buildRangeDropdown()).appendTo($form);
-               $('<fieldset class="inputs"><input type="text" value="" class="inputStart" maxlength="10" /> - <input type="text" value="" class="inputEnd" maxlength="10" /></fieldset>').appendTo($form);
-               $('<fieldset class="buttons"><button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button></fieldset>').appendTo($form);
-               return $container;
-            },
-            buildRangeDropdown: function() 
-            {
-              var now = new Date();
-              var dates =  [
+            initializeDropdownDates: function() {
+              var protoNow = new Date();
+              var now = new Date(protoNow.getFullYear(), protoNow.getMonth(), protoNow.getDate());
+              var datesArray = [
                 {
                   text:  'Custom',
                   value: 'custom',
-                  startdate: new Date(0),
-                  enddate:   new Date(0)
+                  startdate: new Date(1),
+                  enddate:   new Date(1)
                 },
                 {
                   text:  'Today',
@@ -270,12 +270,31 @@
                   enddate:   new Date(now.getFullYear(), now.getMonth(), now.getDate())
                 }
               ];
-              var $dropdown = $('<select>').addClass('rangeDropdown');
-              $(dates).each(function() {
-                var $option = $('<option>').val(this.value).text(this.text).data({startdate: this.startdate, enddate: this.enddate});
-                $option.appendTo($dropdown);
-              });
-              return $dropdown;
+              return datesArray;
+            },
+            initializeContainer: function()
+            {
+               $input.wrap($('<div>').addClass('calendarWrap'));
+               var $container = $('<div>').addClass('calendar').insertAfter($input);
+               var $nav = $('<div>').addClass('nav').appendTo($container);
+               $nav.html('<div class="prev">&lsaquo;</div><div class="next">&rsaquo;</div>');
+               
+               var $sidebar = $('<div>').addClass('sidebar').appendTo($container);
+               var $form = $('<form>').attr({
+                 method: 'get',
+                 action: document.location
+               }).appendTo($sidebar);
+               
+               var $dropdown = $('<select>').addClass('rangeDropdown');
+               $(dropdownDates).each(function() {
+                 var $option = $('<option>').val(this.value).text(this.text).data({startdate: this.startdate, enddate: this.enddate});
+                 $option.appendTo($dropdown);
+               });
+               
+               $('<fieldset>').addClass('dropdown').append('<label>Time period</label>').append($dropdown).appendTo($form);
+               $('<fieldset class="inputs"><input type="text" value="" class="inputStart" maxlength="10" /> - <input type="text" value="" class="inputEnd" maxlength="10" /></fieldset>').appendTo($form);
+               $('<fieldset class="buttons"><button class="cancel">Cancel</button><button type="submit" class="apply">Apply</button></fieldset>').appendTo($form);
+               return $container;
             },
             buildMonth: function(date)
             {
