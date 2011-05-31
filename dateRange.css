@@ -71,6 +71,8 @@ padding:3px;
 
 div.calendar td.selected {
 border:1px dotted #222;
+background-color: blue;
+color: #fff;
 }
 
 div.calendar td.highlight {
