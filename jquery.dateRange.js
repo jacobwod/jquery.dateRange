@@ -129,9 +129,6 @@
                }
                self.highlight($container.find('table:first'));
                self.highlight($container.find('table:last'));
-               
-               console.log($container.find('table:first').data());
-               console.log($container.find('table:last').data());
 
                $inputStart.val(self.formatInput(selected[0]));
                $inputEnd.val(self.formatInput(selected[1]));
