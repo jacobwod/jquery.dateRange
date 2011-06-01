@@ -36,9 +36,9 @@
                $container.find('button.cancel').click(self.cancelButtonClicked);
                $container.find('select.rangeDropdown').bind('change', self.rangeDropdownChanged);
                
-               var now = new Date();
-               now.setDate(1);
-               var prev = new Date(now.getFullYear(), now.getMonth()-1, 1);
+               var protoNow = new Date();
+               var prev = new Date(protoNow.getFullYear(), protoNow.getMonth()-1, 1);
+               var now  = new Date(protoNow.getFullYear(), protoNow.getMonth(), 1);
                $container.append(self.buildMonth(prev));
                $container.append(self.buildMonth(now));
                
@@ -129,6 +129,9 @@
                }
                self.highlight($container.find('table:first'));
                self.highlight($container.find('table:last'));
+               
+               console.log($container.find('table:first').data());
+               console.log($container.find('table:last').data());
 
                $inputStart.val(self.formatInput(selected[0]));
                $inputEnd.val(self.formatInput(selected[1]));
