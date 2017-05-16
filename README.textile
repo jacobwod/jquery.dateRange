@@ -1,4 +1,4 @@
-h1. jquery.dateRange
+h1. [DEPRECATED] - jquery.dateRange
 
 h2. About
 
